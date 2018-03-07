@@ -1,4 +1,4 @@
-# demothon
+# demothon VMRs Information
 1.	Azure
 * 52.187.108.151 - standard admin login credentials
 2.	AWS
@@ -17,3 +17,8 @@
 * Admin User is ‘demothon1’
 
 * Data: sgdemo1.solace.com
+
+# demothon General Comments
+Whatever you are building, please make sure, start your topic hierarchy with “solace/<sin|gcp|azure|aws>/…” 
+
+I am adding “solace/<sin|gcp|azure|aws>/>” subscription on all the bridge links between on-prem and cloud VMR bridge links. It will be bi-directional links, so please use the above convention to avoid looping. 
