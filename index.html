@@ -42,7 +42,7 @@
       userInfoObject.message='I NEED HELP. MY LOCATION IS ('+ userInfoObject.latitude + ',' + userInfoObject.longitude +')';
 
     $.ajax({
-        url: "http://sgdemo.solace.com:8081/solace/sin/sms/"+latitude+"/"+longitude,
+        url: "http://sgdemo.solace.com:8081/solace/sin/sms",
         xhrFields: {
             withCredentials: true
         },
