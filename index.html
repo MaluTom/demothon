@@ -42,7 +42,7 @@
       userInfoObject.message='I NEED HELP. MY LOCATION IS ('+ userInfoObject.latitude + ',' + userInfoObject.longitude +')';
 
     $.ajax({
-        url: "http://sgdemo1.solace.com:8081/solace/sin/sms/"+latitude+"/"+longitude,
+        url: "http://sgdemo.solace.com:8081/solace/sin/sms/"+latitude+"/"+longitude,
         xhrFields: {
             withCredentials: true
         },
@@ -72,7 +72,6 @@
 </head>
 
 <body>
-<iframe id="iframe" src=""  hidden></iframe>
 <div id="help-form" style="display:none" align="center">
   <h1>Send your information</h1>
   <button id="btnHelp" class="btn btn-danger col-md-4" ><i class="fa fa-hospital"></i>KEEP SAFE</button>
