@@ -2,13 +2,13 @@
 <html>
 
 <head>
+  <title>TEAM 1 - DEMOTHON - SOLACE KEEP SAFE</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="lib/solclient.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="theme.css" type="text/css">
   <script>
@@ -16,116 +16,7 @@
 
 
 
-  var TopicPublisher = function (topicName) {
-    'use strict';
-    var publisher = {};
-    publisher.session = null;
-    publisher.topicName = topicName;
-
-    // Logger
-    publisher.log = function (line) {
-        var now = new Date();
-        var time = [('0' + now.getHours()).slice(-2), ('0' + now.getMinutes()).slice(-2),
-            ('0' + now.getSeconds()).slice(-2)];
-        var timestamp = '[' + time.join(':') + '] ';
-        console.log(timestamp + line);
-
-    };
-
-    publisher.log('\n*** Publisher to topic "' + publisher.topicName + '" is ready to connect ***');
-
-    // Establishes connection to Solace message router
-    publisher.connect = function () {
-        // create session
-        try {
-            publisher.session = solace.SolclientFactory.createSession({
-                url: 'wss://mr-akw24ivuj.messaging.solace.cloud:21156',
-                vpnName: 'msgvpn-akw26q2kd',
-                userName: 'solace-cloud-client',
-                password: 'gmijjt6bh3t32iqlcbgsfegutb'
-            });
-        } catch (error) {
-            publisher.log(error.toString());
-        }
-        // define session event listeners
-        publisher.session.on(solace.SessionEventCode.UP_NOTICE, function (sessionEvent) {
-            publisher.log('=== Successfully connected and ready to publish messages. ===');
-        });
-        publisher.session.on(solace.SessionEventCode.CONNECT_FAILED_ERROR, function (sessionEvent) {
-            publisher.log('Connection failed to the message router: ' + sessionEvent.infoStr +
-                ' - check correct parameter values and connectivity!');
-        });
-        publisher.session.on(solace.SessionEventCode.DISCONNECTED, function (sessionEvent) {
-            publisher.log('Disconnected.');
-            if (publisher.session !== null) {
-                publisher.session.dispose();
-                publisher.session = null;
-            }
-        });
-
-            publisher.connectToSolace();   // otherwise proceed
-    };
-
-    // Actually connects the session triggered when the iframe has been loaded - see in html code
-    publisher.connectToSolace = function () {
-        try {
-            publisher.log('Connecting...');
-            publisher.session.connect();
-        } catch (error) {
-            publisher.log(error.toString());
-        }
-    };
-
-    // Publishes one message
-    publisher.publish = function (messageText) {
-        if (publisher.session !== null) {
-            var message = solace.SolclientFactory.createMessage();
-            message.setDestination(solace.SolclientFactory.createTopicDestination(publisher.topicName));
-            message.setBinaryAttachment(messageText);
-            message.setDeliveryMode(solace.MessageDeliveryModeType.DIRECT);
-            publisher.log('Publishing message "' + messageText + '" to topic "' + publisher.topicName + '"...');
-            try {
-                publisher.session.send(message);
-                publisher.log('Message published.');
-            } catch (error) {
-                publisher.log(error.toString());
-            }
-        } else {
-            publisher.log('Cannot publish because not connected to Solace message router.');
-        }
-    };
-
-    // Gracefully disconnects from Solace message router
-    publisher.disconnect = function () {
-        publisher.log('Disconnecting from Solace message router...');
-        if (publisher.session !== null) {
-            try {
-                publisher.session.disconnect();
-            } catch (error) {
-                publisher.log(error.toString());
-            }
-        } else {
-            publisher.log('Not connected to Solace message router.');
-        }
-    };
-
-    return publisher;
-};
-
-
-
      var latitude,longitude;
-     var factoryProps = new solace.SolclientFactoryProperties();
-     factoryProps.profile = solace.SolclientFactoryProfiles.version10;
-     solace.SolclientFactory.init(factoryProps);
-
-     var solacePublisher=new TopicPublisher("USER/EMERGENCY/INFO");
-
-
-      $("#iframe").ready(function(){
-       solacePublisher.connect();
-      });
-
 
     $("#btnSubmit").click(function(){
 
@@ -144,12 +35,33 @@
       userInfoObject.longitude=longitude;
       userInfoObject.name=$("#txtName").val();
       userInfoObject.age=$("#txtAge").val();
-      userInfoObject.phoneNumber=$("#txtPhoneNumber").val();
+      userInfoObject.to=$("#txtPhoneNumber").val();
       userInfoObject.sex=$('input[name=grpSex]:checked').val();
       userInfoObject.weight=$("#txtWeight").val();
       userInfoObject.bloodgroup=$( "#optBloodGroup option:selected" ).text();
+      userInfoObject.message='I NEED HELP. MY LOCATION IS ('+ userInfoObject.latitude + ',' + userInfoObject.longitude +')';
 
-      solacePublisher.publish(JSON.stringify(userInfoObject));
+    $.ajax({
+        url: "http://sgdemo1.solace.com:8081/solace/sin/sms/"+latitude+"/"+longitude,
+        xhrFields: {
+            withCredentials: true
+        },
+        beforeSend: function(xhr) {
+          xhr.setRequestHeader("Authorization", "Basic " + btoa("demouser:password"));
+        },
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        processData: false,
+        data: userInfoObject,
+        success: function (data) {
+          console.log('Sent - '+JSON.stringify(data));
+        },
+        error: function(){
+          console.log('Could not send data');
+        }
+      });
+
      });
 
     });
@@ -163,7 +75,7 @@
 <iframe id="iframe" src=""  hidden></iframe>
 <div id="help-form" style="display:none" align="center">
   <h1>Send your information</h1>
-  <button id="btnHelp" class="btn btn-danger col-md-4" ><i class="fa fa-hospital"></i>Emergency </button>
+  <button id="btnHelp" class="btn btn-danger col-md-4" ><i class="fa fa-hospital"></i>KEEP SAFE</button>
 </div>
 
 <div class="form-centered">
@@ -189,7 +101,7 @@
 
         <!-- Text input-->
         <div class="form-group row">
-          <label class="control-label col-md-1" for="txtPhoneNumber">Phone Number</label>
+          <label class="control-label col-md-1" for="txtPhoneNumber">Emergency Contact Number:</label>
 
           <div class="col-md-4">
 
