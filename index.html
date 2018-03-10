@@ -39,26 +39,31 @@
       userInfoObject.sex=$('input[name=grpSex]:checked').val();
       userInfoObject.weight=$("#txtWeight").val();
       userInfoObject.bloodgroup=$( "#optBloodGroup option:selected" ).text();
-      userInfoObject.message='I NEED HELP. MY LOCATION IS ('+ userInfoObject.latitude + ',' + userInfoObject.longitude +')';
+
+     var solaceRouterObject =  {
+        "router":"sgdemo1.solace.com",
+        "port":"8081",
+        "username":"demouser",
+        "password":"password",
+        "topic":"/solace/aws/sms/"+latitude+"/"+longitude,
+        "data": userInfoObject
+      };
 
     $.ajax({
-        url: "http://sgdemo.solace.com:8081/solace/sin/sms",
-        xhrFields: {
-            withCredentials: true
+        url: "https://1awn95t2qe.execute-api.us-east-1.amazonaws.com/demothon/solace-router-rest-post",
+        headers: {
+        "x-api-key":"jaBTGyelib7OWuxrMsxgk1GPvoyfeM8W72fwR22P"
         },
-        beforeSend: function(xhr) {
-          xhr.setRequestHeader("Authorization", "Basic " + btoa("demouser:password"));
-        },
-        type: 'POST',
+        type: 'post',
         dataType: 'json',
         contentType: 'application/json',
         processData: false,
-        data: userInfoObject,
+        data: JSON.stringify(solaceRouterObject),
         success: function (data) {
           console.log('Sent - '+JSON.stringify(data));
         },
         error: function(){
-          console.log('Could not send data');
+          console.log('Could not send data'+ JSON.stringify(solaceRouterObject));
         }
       });
 
@@ -90,7 +95,7 @@
 
         <!-- Text input-->
         <div class="form-group row">
-          <label class="control-label col-md-1" for="txtName">Name</label>
+          <label class="control-label col-md-3" for="txtName">Name</label>
           <div class="col-md-4">
             <input id="txtName" name="txtName" type="text"  class="form-control input-md float-right" >
 
@@ -98,20 +103,11 @@
           </div>
         </div>
 
-        <!-- Text input-->
-        <div class="form-group row">
-          <label class="control-label col-md-1" for="txtPhoneNumber">Emergency Contact Number:</label>
 
-          <div class="col-md-4">
-
-            <input id="txtPhoneNumber" name="txtPhoneNumber" type="text"  class="form-control input-md float-right"  >
-
-          </div>
-        </div>
 
         <!-- Multiple Radios (inline) -->
         <div class="form-group row">
-          <label class="control-label col-md-1" for="grpSex">Sex</label>
+          <label class="control-label col-md-3" for="grpSex">Sex</label>
           <div class="col-md-2">
             <label class="radio-inline" for="grpSex-0">
               <input type="radio" name="grpSex" id="grpSex-0" value="M" checked="checked">
@@ -126,7 +122,7 @@
 
         <!-- Text input-->
         <div class="form-group row">
-          <label class="control-label col-md-1" for="txtWeight">Weight</label>
+          <label class="control-label col-md-3" for="txtWeight">Weight</label>
 
           <div class="col-md-2">
             <input id="txtWeight" name="txtWeight" type="text" class="form-control input-md float-right" >
@@ -136,7 +132,7 @@
 
         <!-- Text input-->
         <div class="form-group row">
-          <label class="control-label col-md-1" for="txtAge">Age</label>
+          <label class="control-label col-md-3" for="txtAge">Age</label>
 
           <div class="col-md-2">
 
@@ -150,7 +146,7 @@
 
         <!-- Select -->
         <div class="form-group row">
-          <label class="control-label col-md-1" for="optBloodGroup">Blood Group</label>
+          <label class="control-label col-md-3" for="optBloodGroup">Blood Group</label>
 
           <div class="col-md-2">
             <select id="optBloodGroup" name="optBloodGroup" class="form-control">
@@ -166,9 +162,20 @@
           </div>
         </div>
 
+        <!-- Text input-->
+        <div class="form-group row">
+          <label class="control-label col-md-3" for="txtPhoneNumber">Emergency Contact #:</label>
+
+          <div class="col-md-4">
+
+            <input id="txtPhoneNumber" name="txtPhoneNumber" type="text"  class="form-control input-md float-right"  >
+
+          </div>
+        </div>
+
         <!-- Button -->
         <div class="form-group row">
-          <label class="col-md-1 control-label" for="btnSubmit"></label>
+          <label class="col-md-3 control-label" for="btnSubmit"></label>
 
           <div class="col-md-2">
             <div id="btnSubmit" name="btnSubmit" class="btn btn-primary">Submit</div>
