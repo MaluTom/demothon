@@ -35,15 +35,15 @@
       userInfoObject.longitude=longitude;
       userInfoObject.name=$("#txtName").val();
       userInfoObject.age=$("#txtAge").val();
-      userInfoObject.to=$("#txtPhoneNumber").val();
+      userInfoObject.emergencyContact=$("#txtPhoneNumber").val();
       userInfoObject.sex=$('input[name=grpSex]:checked').val();
       userInfoObject.weight=$("#txtWeight").val();
       userInfoObject.bloodgroup=$( "#optBloodGroup option:selected" ).text();
 
      var solaceRouterObject =  {
-        "router":"sgdemo1.solace.com",
+        "router":"13.56.60.2",
         "port":"8081",
-        "username":"demouser",
+        "username":"demo_user",
         "password":"password",
         "topic":"/solace/aws/sms/"+latitude+"/"+longitude,
         "data": userInfoObject
@@ -60,6 +60,8 @@
         processData: false,
         data: JSON.stringify(solaceRouterObject),
         success: function (data) {
+            $("#help-form").hide();
+            $("#help-sent").toggle("slide");
           console.log('Sent - '+JSON.stringify(data));
         },
         error: function(){
@@ -71,12 +73,14 @@
 
     });
 
-
-
   </script>
 </head>
 
 <body>
+<div id="help-sent" style="display:none" align="center">
+  <h1 style="color:green">KEEP SAFE ALERT SENT - HELP IS ON THE WAY!</h1>
+</div>
+
 <div id="help-form" style="display:none" align="center">
   <h1>Send your information</h1>
   <button id="btnHelp" class="btn btn-danger col-md-4" ><i class="fa fa-hospital"></i>KEEP SAFE</button>
@@ -91,7 +95,7 @@
       <fieldset>
 
         <!-- Form Name -->
-        <legend><img src="solace-logo-site-header.png" width="25%" height="25%">Health Alert</legend>
+        <legend><img src="solace-logo-site-header.png" width="25%" height="25%">Keep Safe</legend>
 
         <!-- Text input-->
         <div class="form-group row">
