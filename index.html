@@ -48,17 +48,17 @@
         "topic":"/solace/aws/sms/"+latitude+"/"+longitude,
         "data": userInfoObject
       };
-
+      
     $.ajax({
-        url: "https://1awn95t2qe.execute-api.us-east-1.amazonaws.com/demothon/solace-router-rest-post",
-        headers: {
-        "x-api-key":"jaBTGyelib7OWuxrMsxgk1GPvoyfeM8W72fwR22P"
+        url: "https://sgdemo1.solace.com:8843",
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader ("Authorization", "Basic " + btoa('demo_user:password'));
         },
         type: 'post',
         dataType: 'json',
         contentType: 'application/json',
         processData: false,
-        data: JSON.stringify(solaceRouterObject),
+        data: JSON.stringify(userInfoObject),
         success: function (data) {
             $("#help-form").hide();
             $("#help-sent").toggle("slide");
