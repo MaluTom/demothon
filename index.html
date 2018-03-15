@@ -10,13 +10,15 @@
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link rel="stylesheet" href="theme.css" type="text/css">
+  <script src="lib/mqttws31.js"></script>
+  <script src="lib/mqtt-client.min.js">
+  <link rel="stylesheet" href="theme.css" type="text/css" />
   <script>
   $(function(){
 
 
 
-     var latitude,longitude;
+    var latitude,longitude;
 
     $("#btnSubmit").click(function(){
 
@@ -41,16 +43,16 @@
       userInfoObject.bloodgroup=$( "#optBloodGroup option:selected" ).text();
 
      var solaceRouterObject =  {
-        "router":"13.56.60.2",
-        "port":"8081",
+        "router":"sgdemo1.solace.com",
+        "port":"55555",
         "username":"demo_user",
         "password":"password",
-        "topic":"/solace/aws/sms/"+latitude+"/"+longitude,
+        "topic":"solace/sin/alert/"+latitude+"/"+longitude,
         "data": userInfoObject
       };
-      
+
     $.ajax({
-        url: "https://sgdemo1.solace.com:8843",
+        url: "https://sgdemo.solace.com/solace/sin/sms/"+latitude+"/"+longitude,
         beforeSend: function (xhr) {
           xhr.setRequestHeader ("Authorization", "Basic " + btoa('demo_user:password'));
         },
@@ -64,8 +66,16 @@
             $("#help-sent").toggle("slide");
           console.log('Sent - '+JSON.stringify(data));
         },
-        error: function(){
-          console.log('Could not send data'+ JSON.stringify(solaceRouterObject));
+        error: function(e){
+           if(e.statusText==="OK"){
+            $("#help-form").hide();
+            $("#help-sent").toggle("slide");
+          console.log('Sent - '+JSON.stringify(data));
+           } else{
+            
+          console.log('Could not send data'+ JSON.stringify(userInfoObject)+', Error:');
+          console.log(e);
+        }
         }
       });
 
@@ -73,7 +83,7 @@
 
     });
 
-  </script>
+</script>
 </head>
 
 <body>
