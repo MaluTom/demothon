@@ -10,8 +10,6 @@
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <script src="lib/mqttws31.js"></script>
-  <script src="lib/mqtt-client.min.js">
   <link rel="stylesheet" href="theme.css" type="text/css" />
   <script>
   $(function(){
@@ -72,7 +70,7 @@
             $("#help-sent").toggle("slide");
           console.log('Sent - '+JSON.stringify(data));
            } else{
-            
+
           console.log('Could not send data'+ JSON.stringify(userInfoObject)+', Error:');
           console.log(e);
         }
